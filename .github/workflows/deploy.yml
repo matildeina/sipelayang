@@ -5,34 +5,30 @@ on:
     branches:
       - main
 
-env:
-  PROJECT_ID: ets-cloud-matilde
-  SERVICE_NAME: sipelayang-service
-  REGION: asia-southeast2
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Memaksa pakai Node 24 sesuai saran GitHub
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Kode
-        uses: actions/checkout@v4 # Update ke v4
+        uses: actions/checkout@v4
 
       - name: Authenticate ke GCP
-        uses: google-github-actions/auth@v2 # Update ke v2
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Build dan Push Docker Image
-        run: |
-          gcloud auth configure-docker asia-southeast2-docker.pkg.dev
-          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest .
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
-      - name: Deploy ke Cloud Run
+      - name: Build and Push to Artifact Registry
         run: |
-          gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest \
-            --add-cloudsql-instances ets-cloud-matilde:asia-southeast2:db-sipelayang-matilde \
-            --region ${{ env.REGION }} \
+          gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
+          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/ets-cloud-matilde/repo-sipelayang/app-image:latest .
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy sipelayang-service \
+            --image asia-southeast2-docker.pkg.dev/ets-cloud-matilde/repo-sipelayang/app-image:latest \
+            --region asia-southeast2 \
             --platform managed \
             --allow-unauthenticated

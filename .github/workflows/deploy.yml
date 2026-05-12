@@ -9,7 +9,7 @@ env:
   PROJECT_ID: ets-cloud-matilde
   SERVICE_NAME: sipelayang-service
   REGION: asia-southeast2
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
@@ -29,8 +29,8 @@ jobs:
       - name: Build and Push
         run: |
           gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
-          # Pakai --no-cache biar dia bener-bener build ulang dari nol, siapa tahu ada cache rusak
-          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${| env.PROJECT_ID |}/repo-sipelayang/app-image:latest . --suppress-logs
+          # Perbaikan: Pakai kurung kurawal ${{ }} yang benar
+          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --suppress-logs
 
       - name: Deploy to Cloud Run
         run: |

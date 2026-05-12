@@ -9,7 +9,6 @@ env:
   PROJECT_ID: ets-cloud-matilde
   SERVICE_NAME: sipelayang-service
   REGION: asia-southeast2
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
@@ -29,16 +28,17 @@ jobs:
       - name: Build and Push
         run: |
           gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
-          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --suppress-logs
+          # Gunakan --async supaya GitHub tidak perlu streaming log yang dilarang itu
+          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --async
 
       - name: Deploy to Cloud Run
         run: |
+          # Kasih jeda 20 detik biar build-nya dapet start di server Google
+          sleep 20
           gcloud run deploy ${{ env.SERVICE_NAME }} \
             --image asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest \
             --add-cloudsql-instances ${{ env.PROJECT_ID }}:asia-southeast2:db-sipelayang-matilde \
             --region ${{ env.REGION }} \
             --platform managed \
             --port 8080 \
-            --memory 512Mi \
-            --timeout 300 \
             --allow-unauthenticated

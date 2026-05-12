@@ -1,9 +1,10 @@
 {
   "name": "sipelayang-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sistem Pelayanan Masyarakat Terpadu",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,7 +13,8 @@
   "type": "commonjs",
   "dependencies": {
     "@google-cloud/storage": "^7.19.0",
-    "express": "^5.2.1",
-    "multer": "^2.1.1"
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.9.0"
   }
 }

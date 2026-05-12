@@ -1490,7 +1490,8 @@ const App = () => {
 };
 
 // Mount ke DOM
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+const port = process.env.PORT || 8080; // Pastikan menggunakan process.env.PORT
 
-export default App;
+app.listen(port, () => {
+  console.log(`Aplikasi Sipelayang jalan di port ${port}`);
+});

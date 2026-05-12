@@ -9,8 +9,8 @@ env:
   PROJECT_ID: ets-cloud-matilde
   SERVICE_NAME: sipelayang-service
   REGION: asia-southeast2
-  # Memaksa pakai Node 24 agar tidak ada peringatan versi di GitHub Actions
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Memaksa pakai Node 24 agar tidak ada warning di GitHub Actions 2026
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
 
 jobs:
   deploy:
@@ -29,15 +29,14 @@ jobs:
 
       - name: Build and Push to Artifact Registry
         run: |
-          # Konfigurasi Docker
+          # Konfigurasi Docker agar bisa push ke Artifact Registry
           gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
-
-          # Gunakan --async agar GitHub tidak error saat mencoba baca log
-          # Ini solusi buat masalah VPC-SC / Log Forbidden yang Mane alami
+          
+          # Gunakan --async agar GitHub tidak error karena masalah streaming log
           gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --async
-
-          # Kasih jeda 10 detik biar proses di server Google stabil sebelum lanjut
-          sleep 10
+          
+          # Kasih jeda sebentar biar proses upload selesai sempurna
+          sleep 15
 
       - name: Deploy to Cloud Run
         run: |
@@ -46,4 +45,6 @@ jobs:
             --add-cloudsql-instances ${{ env.PROJECT_ID }}:asia-southeast2:db-sipelayang-matilde \
             --region ${{ env.REGION }} \
             --platform managed \
+            --port 8080 \
+            --timeout 300 \
             --allow-unauthenticated

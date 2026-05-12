@@ -3,22 +3,23 @@ name: Deploy ke Cloud Run Otomatis
 on:
   push:
     branches:
-      - main # Setiap Mane push ke branch main, dia otomatis jalan
+      - main
 
 env:
   PROJECT_ID: ets-cloud-matilde
   SERVICE_NAME: sipelayang-service
   REGION: asia-southeast2
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Memaksa pakai Node 24 sesuai saran GitHub
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Kode
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Update ke v4
 
       - name: Authenticate ke GCP
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2 # Update ke v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 

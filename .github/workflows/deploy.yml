@@ -9,6 +9,8 @@ env:
   PROJECT_ID: ets-cloud-matilde
   SERVICE_NAME: sipelayang-service
   REGION: asia-southeast2
+  # Nama repository yang dibuat di Artifact Registry
+  REPO_NAME: repo-sipelayang 
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -21,26 +23,27 @@ jobs:
       - name: Authenticate ke GCP
         uses: google-github-actions/auth@v2
         with:
+          # Pastikan secret ini berisi JSON Key dari Service Account github-actions-deploy
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Build and Push
+      - name: Build and Push to Artifact Registry
         run: |
-          gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
-          # Gunakan --async biar gak kena error streaming log
-          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --async
+          # Konfigurasi agar Docker bisa push ke GCP
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+          
+          # Melakukan build di server GCP dan menyimpannya ke Artifact Registry
+          # Tanpa --async agar step ini menunggu sampai build selesai
+          gcloud builds submit --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/app-image:latest .
 
       - name: Deploy to Cloud Run
         run: |
-          # Tunggu 60 detik biar build di sisi Google Cloud selesai sempurna
-          echo "Menunggu build selesai di server Google..."
-          sleep 60
-
+          # Mengambil image yang baru saja dibuild untuk dideploy ke Cloud Run
           gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest \
-            --add-cloudsql-instances ${{ env.PROJECT_ID }}:asia-southeast2:db-sipelayang-matilde \
+            --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/app-image:latest \
+            --add-cloudsql-instances ${{ env.PROJECT_ID }}:${{ env.REGION }}:db-sipelayang-matilde \
             --region ${{ env.REGION }} \
             --platform managed \
             --port 8080 \

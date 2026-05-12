@@ -9,7 +9,6 @@ env:
   PROJECT_ID: ets-cloud-matilde
   SERVICE_NAME: sipelayang-service
   REGION: asia-southeast2
-  # Memaksa pakai Node 24 agar tidak ada warning di GitHub Actions 2026
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
 
 jobs:
@@ -27,16 +26,11 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Build and Push to Artifact Registry
+      - name: Build and Push
         run: |
-          # Konfigurasi Docker agar bisa push ke Artifact Registry
           gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
-          
-          # Gunakan --async agar GitHub tidak error karena masalah streaming log
-          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --async
-          
-          # Kasih jeda sebentar biar proses upload selesai sempurna
-          sleep 15
+          # Pakai --no-cache biar dia bener-bener build ulang dari nol, siapa tahu ada cache rusak
+          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${| env.PROJECT_ID |}/repo-sipelayang/app-image:latest . --suppress-logs
 
       - name: Deploy to Cloud Run
         run: |
@@ -46,5 +40,6 @@ jobs:
             --region ${{ env.REGION }} \
             --platform managed \
             --port 8080 \
+            --memory 512Mi \
             --timeout 300 \
             --allow-unauthenticated

@@ -1492,6 +1492,6 @@ const App = () => {
 // Mount ke DOM
 const port = process.env.PORT || 8080; // Pastikan menggunakan process.env.PORT
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Aplikasi Sipelayang jalan di port ${port}`);
 });

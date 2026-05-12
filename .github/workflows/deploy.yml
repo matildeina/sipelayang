@@ -9,7 +9,7 @@ env:
   PROJECT_ID: ets-cloud-matilde
   SERVICE_NAME: sipelayang-service
   REGION: asia-southeast2
-  # Memaksa menggunakan Node 24 agar tidak ada peringatan deprecated
+  # Memaksa pakai Node 24 agar tidak ada warning deprecated di GitHub Actions 2026
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -29,12 +29,11 @@ jobs:
 
       - name: Build and Push to Artifact Registry
         run: |
-          # Konfigurasi Docker agar bisa push ke Google Artifact Registry
+          # Konfigurasi Docker agar bisa push ke Artifact Registry
           gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
 
-          # Menjalankan build. Jika ada masalah log bucket/VPC, 
-          # perintah ini akan tetap mencoba build langsung ke Artifact Registry.
-          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest .
+          # Gunakan --suppress-logs untuk menghindari error VPC-SC/Log Streaming
+          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --suppress-logs
 
       - name: Deploy to Cloud Run
         run: |

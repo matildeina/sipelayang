@@ -2,15 +2,15 @@ FROM node:20-slim
 
 WORKDIR /usr/src/app
 
-# Copy package files dan install dependencies
+# Copy package files dulu buat install dependency
 COPY package*.json ./
 RUN npm install --only=production
 
-# Copy semua file kodingan Mane
+# COPY SEMUA file kodingan (Ini jangan sampe kelewat!)
 COPY . .
 
-# Port yang dipakai Cloud Run
+# Beri tahu Cloud Run port yang dipakai
 EXPOSE 8080
 
-# Perintah buat jalanin aplikasi
+# Perintah menjalankan aplikasi (sesuaikan nama filenya)
 CMD [ "node", "index.js" ]

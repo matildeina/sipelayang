@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiPelayang — Sistem Pelayanan Masyarakat Terpadu</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Serif+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hijau:#0F6E56;--hijau-light:#E1F5EE;--hijau-mid:#1D9E75;
+  --biru:#185FA5;--biru-light:#E6F1FB;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --merah:#A32D2D;--merah-light:#FCEBEB;
+  --abu:#888780;--abu-light:#F1EFE8;
+  --bg:#F8F9FA;--surface:#FFFFFF;--border:#E5E7EB;
+  --text:#111827;--text-muted:#6B7280;
+  --font:'Plus Jakarta Sans',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── NAV ── */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{width:32px;height:32px;background:var(--hijau);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.nav-title{font-size:15px;font-weight:700;color:var(--hijau)}
+.nav-title span{font-weight:400;color:var(--text-muted);font-size:12px;display:block}
+.nav-links{display:flex;gap:4px}
+.nav-btn{background:none;border:none;padding:7px 14px;border-radius:7px;font-size:13px;font-family:var(--font);cursor:pointer;color:var(--text-muted);transition:all .15s;display:flex;align-items:center;gap:5px}
+.nav-btn:hover{background:#F3F4F6;color:var(--text)}
+.nav-btn.active{background:var(--hijau-light);color:var(--hijau);font-weight:600}
+
+/* ── LAYOUT ── */
+.page{display:none;padding:2rem;max-width:980px;margin:0 auto}
+.page.active{display:block}
+
+/* ── HERO ── */
+.hero{background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:3rem 2.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.hero-deco{position:absolute;right:-30px;top:-30px;width:220px;height:220px;background:radial-gradient(circle,#E1F5EE 0%,transparent 70%);border-radius:50%;pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--hijau-light);color:var(--hijau);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:1rem}
+.hero h1{font-family:'Noto Serif Display',serif;font-size:34px;font-weight:600;line-height:1.2;margin-bottom:.75rem}
+.hero h1 em{color:var(--hijau);font-style:normal}
+.hero p{color:var(--text-muted);font-size:15px;line-height:1.6;max-width:520px;margin-bottom:1.5rem}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--hijau);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:background .15s}
+.hero-cta:hover{background:var(--hijau-mid)}
+
+/* ── STATS ── */
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.75rem}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.5rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem}
+.stat-icon{font-size:20px;color:var(--hijau);margin-bottom:8px}
+.stat-num{font-size:26px;font-weight:700;color:var(--hijau);font-family:'Noto Serif Display',serif}
+.stat-label{font-size:12px;color:var(--text-muted);margin-top:2px}
+
+/* ── INFO CARDS ── */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem}
+.info-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:.75rem}
+.info-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.info-card p{font-size:12px;color:var(--text-muted);line-height:1.5}
+
+/* ── FORM ── */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem}
+.form-header{margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.form-header h2{font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px}
+.form-header p{color:var(--text-muted);font-size:13px;margin-top:4px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-row.full{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:13px;font-weight:500}
+.form-label .req{color:var(--merah);margin-left:2px}
+.form-input,.form-select,.form-textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:var(--font);background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--hijau);box-shadow:0 0 0 3px rgba(15,110,86,.08)}
+.form-textarea{resize:vertical;min-height:90px;line-height:1.5}
+
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;background:#FAFAFA}
+.upload-zone:hover{border-color:var(--hijau);background:var(--hijau-light)}
+.upload-zone .ti{font-size:34px;color:var(--text-muted);margin-bottom:.5rem;display:block}
+.upload-zone p{font-size:13px;color:var(--text-muted)}
+.upload-zone strong{color:var(--text)}
+.upload-name{font-size:12px;color:var(--hijau);margin-top:6px;font-weight:500;display:none}
+
+.btn-submit{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--hijau);color:#fff;border:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:background .15s;margin-top:1.5rem}
+.btn-submit:hover{background:var(--hijau-mid)}
+.btn-submit.full{width:100%}
+
+.alert-success{background:var(--hijau-light);border:1px solid var(--hijau-mid);border-radius:12px;padding:1rem 1.25rem;display:none;align-items:center;gap:10px;margin-bottom:1.5rem;color:var(--hijau)}
+.alert-success .ti{font-size:22px}
+.alert-success p{font-size:13px;font-weight:500}
+
+/* ── TABLE PAGE ── */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.table-topbar{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.table-topbar h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.filter-row{display:flex;gap:8px;align-items:center}
+.filter-select{padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;cursor:pointer}
+.filter-select:focus{border-color:var(--hijau)}
+
+table.data-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+table.data-tbl th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);background:#F9FAFB;border-bottom:1px solid var(--border)}
+table.data-tbl td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table.data-tbl tr:last-child td{border-bottom:none}
+table.data-tbl tr:hover td{background:#F9FAFB}
+
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge-diproses{background:var(--biru-light);color:var(--biru)}
+.badge-selesai{background:var(--hijau-light);color:var(--hijau)}
+.badge-menunggu{background:var(--amber-light);color:var(--amber)}
+.badge-baru{background:var(--abu-light);color:#444}
+
+.link-cdn{color:var(--biru);font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.link-cdn:hover{text-decoration:underline}
+
+.tbl-actions{display:flex;gap:6px}
+.btn-act{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;font-family:var(--font);cursor:pointer;color:var(--text-muted);transition:all .15s;display:flex;align-items:center;gap:4px}
+.btn-act:hover{background:#F3F4F6;color:var(--text);border-color:#D1D5DB}
+.btn-act.del:hover{border-color:var(--merah);color:var(--merah);background:var(--merah-light)}
+
+.chip{font-size:11px;background:#F3F4F6;padding:2px 8px;border-radius:4px;color:var(--text-muted);font-weight:500}
+.empty-state{text-align:center;padding:3rem;color:var(--text-muted);font-size:13px}
+.empty-state .ti{font-size:36px;display:block;margin-bottom:.5rem;opacity:.4}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--surface);border-radius:16px;padding:2rem;width:460px;max-width:90vw;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal-box h3{font-size:17px;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted);padding:2px;border-radius:4px}
+.modal-close:hover{background:#F3F4F6;color:var(--text)}
+.modal-actions{display:flex;gap:8px;margin-top:1.5rem;justify-content:flex-end}
+.btn-danger{background:var(--merah);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;transition:opacity .15s}
+.btn-danger:hover{opacity:.85}
+.btn-cancel{background:#F3F4F6;color:var(--text);border:1px solid var(--border);padding:10px 20px;border-radius:8px;font-size:13px;font-family:var(--font);cursor:pointer;transition:background .15s}
+.btn-cancel:hover{background:#E5E7EB}
+.edit-grid{display:grid;gap:12px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .nav{padding:0 1rem}.page{padding:1rem}
+  .form-row{grid-template-columns:1fr}
+  .hero{padding:1.5rem}
+  .hero h1{font-size:24px}
+  table.data-tbl th:nth-child(4),
+  table.data-tbl td:nth-child(4),
+  table.data-tbl th:nth-child(5),
+  table.data-tbl td:nth-child(5){display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo"><i class="ti ti-building-community"></i></div>
+    <div class="nav-title">SiPelayang <span>Sistem Pelayanan Masyarakat Terpadu</span></div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPage('beranda',this)">
+      <i class="ti ti-home"></i> Beranda
+    </button>
+    <button class="nav-btn" onclick="showPage('ajukan',this)">
+      <i class="ti ti-file-plus"></i> Ajukan Layanan
+    </button>
+    <button class="nav-btn" onclick="showPage('data',this)">
+      <i class="ti ti-database"></i> Data Pengajuan
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HALAMAN 1: BERANDA
+══════════════════════════════════════ -->
+<div class="page active" id="page-beranda">
+
+  <div class="hero">
+    <div class="hero-deco"></div>
+    <div class="hero-badge"><i class="ti ti-shield-check"></i> Sistem Digital Kelurahan</div>
+    <h1>Layanan Warga <em>Cepat</em> &amp; Transparan</h1>
+    <p>Ajukan surat pengantar, laporan kerusakan fasilitas, atau permohonan bansos secara digital — tanpa antre, tanpa kertas.</p>
+    <button class="hero-cta" onclick="showPage('ajukan', document.querySelectorAll('.nav-btn')[1])">
+      <i class="ti ti-file-plus"></i> Ajukan Layanan Sekarang
+    </button>
+  </div>
+
+  <p class="section-label">Statistik Pelayanan</p>
+  <div class="stats-row">
+    <div class="stat-card">
+      <i class="ti ti-file-text stat-icon"></i>
+      <div class="stat-num" id="stat-total">4</div>
+      <div class="stat-label">Total Pengajuan</div>
+    </div>
+    <div class="stat-card">
+      <i class="ti ti-circle-check stat-icon"></i>
+      <div class="stat-num" id="stat-selesai">1</div>
+      <div class="stat-label">Pengajuan Selesai</div>
+    </div>
+    <div class="stat-card">
+      <i class="ti ti-loader stat-icon"></i>
+      <div class="stat-num" id="stat-proses">1</div>
+      <div class="stat-label">Sedang Diproses</div>
+    </div>
+    <div class="stat-card">
+      <i class="ti ti-clock stat-icon"></i>
+      <div class="stat-num" id="stat-tunggu">2</div>
+      <div class="stat-label">Menunggu Verifikasi</div>
+    </div>
+  </div>
+
+  <p class="section-label">Jenis Layanan Tersedia</p>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-icon" style="background:var(--biru-light);color:var(--biru)"><i class="ti ti-id"></i></div>
+      <h3>Surat Pengantar</h3>
+      <p>Pengantar untuk keperluan administrasi, SKCK, beasiswa, dan dokumen resmi lainnya.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon" style="background:var(--amber-light);color:var(--amber)"><i class="ti ti-tool"></i></div>
+      <h3>Laporan Fasilitas Rusak</h3>
+      <p>Laporkan kerusakan infrastruktur — lampu jalan, jembatan, saluran air, dan lainnya.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon" style="background:var(--hijau-light);color:var(--hijau)"><i class="ti ti-heart-handshake"></i></div>
+      <h3>Permohonan Bansos</h3>
+      <p>Daftarkan diri untuk program bantuan sosial, UMKM, dan subsidi pemerintah.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon" style="background:var(--merah-light);color:var(--merah)"><i class="ti ti-alert-triangle"></i></div>
+      <h3>Pengaduan Umum</h3>
+      <p>Sampaikan keluhan atau saran terhadap pelayanan publik di lingkungan Anda.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     HALAMAN 2: FORM PENGAJUAN
+══════════════════════════════════════ -->
+<div class="page" id="page-ajukan">
+
+  <div class="alert-success" id="successBanner">
+    <i class="ti ti-circle-check"></i>
+    <p>Pengajuan berhasil dikirim! Dokumen terunggah ke GCS Bucket. Nomor tiket: <strong id="tiketNum">—</strong></p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-header">
+      <h2><i class="ti ti-file-plus" style="color:var(--hijau)"></i> Form Pengajuan Layanan</h2>
+      <p>Isi formulir di bawah ini dengan lengkap dan benar. Kolom bertanda <span style="color:var(--merah)">*</span> wajib diisi.</p>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nama Pelapor <span class="req">*</span></label>
+        <input class="form-input" type="text" id="fNama" placeholder="Nama lengkap sesuai KTP">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No. Telepon / WhatsApp</label>
+        <input class="form-input" type="text" id="fTelp" placeholder="08xx-xxxx-xxxx">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Jenis Layanan <span class="req">*</span></label>
+        <select class="form-select" id="fJenis">
+          <option value="">— Pilih jenis layanan —</option>
+          <option value="Surat Pengantar">Surat Pengantar</option>
+          <option value="Fasilitas Umum">Laporan Fasilitas Rusak</option>
+          <option value="Bansos">Permohonan Bansos</option>
+          <option value="Pengaduan">Pengaduan Umum</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lokasi / RT-RW</label>
+        <input class="form-input" type="text" id="fLokasi" placeholder="Cth: RT 03/RW 07, Kel. Lebak Gede">
+      </div>
+    </div>
+
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Deskripsi / Keterangan <span class="req">*</span></label>
+        <textarea class="form-textarea" id="fDesc" placeholder="Jelaskan keperluan atau permasalahan yang Anda laporkan secara detail..."></textarea>
+      </div>
+    </div>
+
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Unggah Dokumen / Foto Bukti</label>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+          <i class="ti ti-cloud-upload"></i>
+          <p><strong>Klik untuk memilih file</strong> atau seret ke sini</p>
+          <p style="font-size:11px;margin-top:4px;color:#9CA3AF">Format: PDF, JPG, PNG — Maks. 10 MB</p>
+        </div>
+        <p class="upload-name" id="fileName"></p>
+        <input type="file" id="fileInput" style="display:none" accept=".pdf,.jpg,.jpeg,.png"
+               onchange="handleFileChange(this)">
+      </div>
+    </div>
+
+    <button class="btn-submit full" onclick="submitForm()">
+      <i class="ti ti-send"></i> Kirim Pengajuan
+    </button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     HALAMAN 3: DATA PENGAJUAN (CRUD)
+══════════════════════════════════════ -->
+<div class="page" id="page-data">
+  <div class="table-wrap">
+    <div class="table-topbar">
+      <h2><i class="ti ti-database" style="color:var(--hijau)"></i> Data Pengajuan — Cloud SQL</h2>
+      <div class="filter-row">
+        <label style="font-size:12px;color:var(--text-muted)">Filter:</label>
+        <select class="filter-select" onchange="filterTable(this.value)">
+          <option value="semua">Semua Status</option>
+          <option value="Diproses">Diproses</option>
+          <option value="Selesai">Selesai</option>
+          <option value="Menunggu">Menunggu</option>
+          <option value="Baru">Baru</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table class="data-tbl" id="mainTable">
+        <thead>
+          <tr>
+            <th style="width:55px">ID</th>
+            <th style="width:95px">Tanggal</th>
+            <th style="width:160px">Nama Pelapor</th>
+            <th style="width:155px">Jenis Layanan</th>
+            <th style="width:160px">Keterangan</th>
+            <th style="width:95px">Status</th>
+            <th style="width:140px">Link Lampiran (CDN)</th>
+            <th style="width:120px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     MODAL: EDIT
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <h3>
+      <span><i class="ti ti-edit" style="margin-right:6px;color:var(--hijau)"></i>Edit Pengajuan</span>
+      <button class="modal-close" onclick="closeModal('editModal')"><i class="ti ti-x"></i></button>
+    </h3>
+    <div class="edit-grid">
+      <div class="form-group">
+        <label class="form-label">Nama Pelapor</label>
+        <input class="form-input" id="eNama" type="text">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jenis Layanan</label>
+        <select class="form-select" id="eJenis">
+          <option value="Surat Pengantar">Surat Pengantar</option>
+          <option value="Fasilitas Umum">Laporan Fasilitas Rusak</option>
+          <option value="Bansos">Permohonan Bansos</option>
+          <option value="Pengaduan">Pengaduan Umum</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Keterangan</label>
+        <input class="form-input" id="eKet" type="text">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="eStatus">
+          <option value="Baru">Baru</option>
+          <option value="Menunggu">Menunggu</option>
+          <option value="Diproses">Diproses</option>
+          <option value="Selesai">Selesai</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('editModal')">Batal</button>
+      <button class="btn-submit" style="margin-top:0" onclick="saveEdit()">
+        <i class="ti ti-check"></i> Simpan Perubahan
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     MODAL: HAPUS
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="delModal">
+  <div class="modal-box">
+    <h3>
+      <span><i class="ti ti-trash" style="margin-right:6px;color:var(--merah)"></i>Hapus Data</span>
+      <button class="modal-close" onclick="closeModal('delModal')"><i class="ti ti-x"></i></button>
+    </h3>
+    <p style="font-size:14px;color:var(--text-muted);line-height:1.6">
+      Yakin ingin menghapus pengajuan dari <strong id="delName" style="color:var(--text)">—</strong>?
+      <br>Tindakan ini <strong style="color:var(--merah)">tidak dapat dibatalkan</strong>.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('delModal')">Batal</button>
+      <button class="btn-danger" onclick="confirmDelete()">
+        <i class="ti ti-trash"></i> Ya, Hapus
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+// ── Ganti IP CDN sesuai milikmu ──
+const CDN_BASE = 'http://34.101.82.15/assets/';
+
+// ── Data dummy (simulasi Cloud SQL) ──
+let db = [
+  { id: '#001', tgl: '2026-05-01', nama: 'Matilde Ina',    jenis: 'Surat Pengantar', ket: 'Urus beasiswa BU',                  status: 'Diproses', file: 'bukti_matilde.pdf'   },
+  { id: '#002', tgl: '2026-05-03', nama: 'Budi Santoso',   jenis: 'Fasilitas Umum',  ket: 'Lampu jalan mati depan ITENAS',     status: 'Selesai',  file: 'foto_lampu.jpg'      },
+  { id: '#003', tgl: '2026-05-07', nama: 'Siti Aminah',    jenis: 'Bansos',          ket: 'Pendaftaran UMKM baru',             status: 'Menunggu', file: 'ktp_siti.pdf'        },
+  { id: '#004', tgl: '2026-05-10', nama: 'Riko Febrian',   jenis: 'Pengaduan',       ket: 'Drainase tersumbat RT03',           status: 'Menunggu', file: 'foto_drainase.jpg'   },
+];
+
+let editIdx = null;
+let delIdx  = null;
+
+// ── Navigasi halaman ──
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'data') renderTable(db);
+}
+
+// ── Render tabel ──
+function renderTable(rows) {
+  const tbody = document.getElementById('tableBody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
+      <i class="ti ti-inbox"></i>Tidak ada data ditemukan</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r => {
+    const realIdx = db.indexOf(r);
+    const badgeClass = {
+      Diproses: 'badge-diproses',
+      Selesai:  'badge-selesai',
+      Menunggu: 'badge-menunggu',
+      Baru:     'badge-baru'
+    }[r.status] || 'badge-baru';
+
+    return `<tr>
+      <td><span class="chip">${r.id}</span></td>
+      <td style="color:var(--text-muted);font-size:12px">${r.tgl}</td>
+      <td style="font-weight:500">${r.nama}</td>
+      <td>${r.jenis}</td>
+      <td style="color:var(--text-muted)">${r.ket}</td>
+      <td><span class="badge ${badgeClass}">${r.status}</span></td>
+      <td>
+        <a class="link-cdn" href="${CDN_BASE + r.file}" target="_blank" title="${r.file}">
+          <i class="ti ti-paperclip" style="font-size:12px"></i>${r.file}
+        </a>
+      </td>
+      <td>
+        <div class="tbl-actions">
+          <button class="btn-act" onclick="openEdit(${realIdx})">
+            <i class="ti ti-edit"></i> Edit
+          </button>
+          <button class="btn-act del" onclick="openDel(${realIdx})">
+            <i class="ti ti-trash"></i> Hapus
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Filter tabel ──
+function filterTable(val) {
+  const rows = val === 'semua' ? db : db.filter(r => r.status === val);
+  renderTable(rows);
+}
+
+// ── Upload file ──
+function handleFileChange(input) {
+  const fn = document.getElementById('fileName');
+  if (input.files[0]) {
+    fn.textContent = '✓ File dipilih: ' + input.files[0].name;
+    fn.style.display = 'block';
+    document.getElementById('uploadZone').style.borderColor = 'var(--hijau)';
+    document.getElementById('uploadZone').style.background  = 'var(--hijau-light)';
+  }
+}
+
+// ── Submit form (CREATE) ──
+function submitForm() {
+  const nama  = document.getElementById('fNama').value.trim();
+  const jenis = document.getElementById('fJenis').value;
+  const desc  = document.getElementById('fDesc').value.trim();
+  const file  = document.getElementById('fileInput').files[0];
+
+  if (!nama || !jenis || !desc) {
+    alert('Mohon lengkapi nama pelapor, jenis layanan, dan deskripsi.');
+    return;
+  }
+
+  const now  = new Date();
+  const tgl  = now.toISOString().split('T')[0];
+  const id   = '#' + String(db.length + 1).padStart(3, '0');
+  const fname = file ? file.name : 'dokumen_' + Date.now() + '.pdf';
+
+  db.push({ id, tgl, nama, jenis, ket: desc.substring(0, 45), status: 'Baru', file: fname });
+  updateStats();
+
+  // Tampilkan banner sukses
+  document.getElementById('tiketNum').textContent = id;
+  const banner = document.getElementById('successBanner');
+  banner.style.display = 'flex';
+  setTimeout(() => banner.style.display = 'none', 6000);
+
+  // Reset form
+  ['fNama','fTelp','fLokasi','fDesc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fJenis').value = '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileName').style.display = 'none';
+  document.getElementById('uploadZone').style.borderColor = '';
+  document.getElementById('uploadZone').style.background  = '';
+}
+
+// ── UPDATE (buka modal edit) ──
+function openEdit(i) {
+  editIdx = i;
+  document.getElementById('eNama').value   = db[i].nama;
+  document.getElementById('eJenis').value  = db[i].jenis;
+  document.getElementById('eKet').value    = db[i].ket;
+  document.getElementById('eStatus').value = db[i].status;
+  document.getElementById('editModal').classList.add('show');
+}
+
+function saveEdit() {
+  db[editIdx].nama   = document.getElementById('eNama').value.trim();
+  db[editIdx].jenis  = document.getElementById('eJenis').value;
+  db[editIdx].ket    = document.getElementById('eKet').value.trim();
+  db[editIdx].status = document.getElementById('eStatus').value;
+  closeModal('editModal');
+  renderTable(db);
+  updateStats();
+}
+
+// ── DELETE (buka modal hapus) ──
+function openDel(i) {
+  delIdx = i;
+  document.getElementById('delName').textContent = db[i].nama;
+  document.getElementById('delModal').classList.add('show');
+}
+
+function confirmDelete() {
+  db.splice(delIdx, 1);
+  // Re-index ID biar rapi
+  db.forEach((r, i) => r.id = '#' + String(i + 1).padStart(3, '0'));
+  updateStats();
+  closeModal('delModal');
+  renderTable(db);
+}
+
+// ── Tutup modal ──
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// Tutup modal kalau klik di luar box
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+});
+
+// ── Update statistik beranda ──
+function updateStats() {
+  document.getElementById('stat-total').textContent   = db.length;
+  document.getElementById('stat-selesai').textContent = db.filter(r => r.status === 'Selesai').length;
+  document.getElementById('stat-proses').textContent  = db.filter(r => r.status === 'Diproses').length;
+  document.getElementById('stat-tunggu').textContent  = db.filter(r => r.status === 'Menunggu' || r.status === 'Baru').length;
+}
+
+// Init
+updateStats();
+</script>
+</body>
+</html>

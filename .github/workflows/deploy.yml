@@ -9,7 +9,7 @@ env:
   PROJECT_ID: ets-cloud-matilde
   SERVICE_NAME: sipelayang-service
   REGION: asia-southeast2
-  # Memaksa pakai Node 24 agar tidak ada warning deprecated di GitHub Actions 2026
+  # Memaksa pakai Node 24 agar tidak ada peringatan versi di GitHub Actions
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -29,11 +29,15 @@ jobs:
 
       - name: Build and Push to Artifact Registry
         run: |
-          # Konfigurasi Docker agar bisa push ke Artifact Registry
+          # Konfigurasi Docker
           gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
 
-          # Gunakan --suppress-logs untuk menghindari error VPC-SC/Log Streaming
-          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --suppress-logs
+          # Gunakan --async agar GitHub tidak error saat mencoba baca log
+          # Ini solusi buat masalah VPC-SC / Log Forbidden yang Mane alami
+          gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --async
+
+          # Kasih jeda 10 detik biar proses di server Google stabil sebelum lanjut
+          sleep 10
 
       - name: Deploy to Cloud Run
         run: |

@@ -29,7 +29,6 @@ jobs:
       - name: Build and Push
         run: |
           gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
-          # Perbaikan: Pakai kurung kurawal ${{ }} yang benar
           gcloud builds submit --tag asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/repo-sipelayang/app-image:latest . --suppress-logs
 
       - name: Deploy to Cloud Run
